@@ -68,3 +68,13 @@ eksctl version
 
 ## 과제
 - 본인 환경 정보를 `docs/env-check.txt`에 정리(버전/리전/프로필).
+
+## AI 실무 확장 가이드
+- 개발환경 점검 시 단순 버전 확인에서 끝내지 말고, **재현성**을 확보하세요.
+  - Node 버전 고정(`.nvmrc`), npm lockfile 유지
+  - AWS profile/region 명시
+- AI 프로젝트는 로컬 환경 차이로 이슈가 자주 발생합니다.
+  - 인코딩/시간대/네트워크 정책 차이를 문서화하세요.
+- 권장 산출물:
+  - `docs/env-check.txt`: 버전, 리전, 프로필, 인증 방식
+  - `docs/bootstrap.md`: 신규 인원이 30분 내 실행 가능한 온보딩 문서

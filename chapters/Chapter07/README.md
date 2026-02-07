@@ -26,3 +26,13 @@ kubectl get ns
 
 ## 과제
 - `kubectl -n cpu-agent get all`이 빈 상태인지 확인(초기 상태).
+
+## AI 실무 확장 가이드
+- EKS 준비 단계에서 네임스페이스 분리는 필수입니다(dev/stg/prod).
+- 최소 보안 기준:
+  - IRSA 또는 최소권한 IAM 정책
+  - Secret 분리 및 접근 제어
+  - 기본 NetworkPolicy 적용 검토
+- 비용 관리:
+  - 노드 타입 표준화
+  - 오토스케일 범위 제한

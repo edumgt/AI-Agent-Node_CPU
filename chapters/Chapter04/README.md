@@ -33,3 +33,13 @@
 ## 추가: OpenAI 키 보안 원칙
 - OpenAI API Key는 **브라우저/FE에 절대 노출하면 안 됩니다.**
 - 키는 서버의 환경변수 또는 K8s Secret 등으로만 주입하세요.
+
+## AI 실무 확장 가이드
+- Tool Calling은 “기능”이 아니라 “공격면”이기도 합니다.
+- 필수 통제 항목:
+  - JSON Schema 검증
+  - allowlist(도메인/메서드)
+  - timeout + 최대 응답 바이트 제한
+  - 도구별 rate limit
+- 운영 로그에는 아래를 남기세요.
+  - tool name, input hash, latency, error class

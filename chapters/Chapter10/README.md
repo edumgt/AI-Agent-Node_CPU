@@ -64,3 +64,16 @@ npm run rag:ingest
 - GitHub Secrets에 `OPENAI_API_KEY`를 저장
 - Workflow에서 `kubectl create secret generic openai-secret ...`로 주입
 - 서버는 `OPENAI_API_KEY`를 env로 받아 사용합니다.
+
+## AI 실무 확장 가이드
+- 캡스톤 완료 기준은 “동작”이 아니라 “운영 가능한 품질”입니다.
+- 최종 점검 항목:
+  - 보안: 키 관리/입력 검증/권한 최소화
+  - 신뢰성: timeout/retry/fallback
+  - 비용: 토큰/CPU 사용량 추적
+  - 문서: runbook, 장애 시나리오, 배포/롤백 절차
+- 권장 데모 시나리오:
+  - 정상 응답
+  - tool timeout
+  - allowlist 차단
+  - RAG 미적중(근거 없음 안내)

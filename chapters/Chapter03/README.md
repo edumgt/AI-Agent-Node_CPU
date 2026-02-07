@@ -26,3 +26,11 @@ curl -s http://localhost:8080/api/sessions/demo | jq
 
 ## 과제
 - 메시지 저장 시 role/user/assistant 외에 `meta`(tool, latencyMs 등) 포함하도록 확장.
+
+## AI 실무 확장 가이드
+- 메모리 계층을 `interface -> implementation`으로 분리하면 교체 비용이 크게 줄어듭니다.
+- 추천 정책:
+  - 세션당 메시지 최대치
+  - 사용자별 세션 최대치
+  - TTL + 최근 접근 시간 기반 정리
+- 개인정보/민감정보가 포함될 수 있으므로, 저장 전 마스킹/암호화 여부를 검토하세요.

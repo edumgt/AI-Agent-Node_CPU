@@ -21,3 +21,11 @@
 ## 과제
 - `/metrics` 엔드포인트(간단 카운터/지연시간)를 만들어보거나,
   CloudWatch Embedded Metric Format 적용(선택).
+
+## AI 실무 확장 가이드
+- AI 서비스 운영의 핵심은 “설명 가능한 실패”입니다.
+- 관측 기본 세트:
+  - requestId, sessionId, model/provider, tool latency
+  - 사용자 오류 vs 시스템 오류 분류
+  - SLO 관점 지표(p95 latency, error rate)
+- 알림은 노이즈를 줄이기 위해 임계값/지속시간 조건을 함께 사용하세요.
