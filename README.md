@@ -1,4 +1,4 @@
-# CPU Agent Service (WSL + Express + Vanilla JS + EKS CPU)
+# AI Agent Service (WSL + Express + Vanilla JS + EKS CPU)
 
 ![](image.png)
 
