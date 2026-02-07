@@ -25,3 +25,12 @@ curl -s http://localhost:8080/health
 
 ## 과제
 - `.dockerignore` 작성(예: node_modules, logs, .git 등 제외)
+
+## AI 실무 확장 가이드
+- 컨테이너는 배포 산출물의 기준선입니다.
+- 권장 최적화:
+  - `npm ci` 사용
+  - 멀티 스테이지 빌드 검토
+  - non-root 사용자 실행
+  - 취약점 스캔 파이프라인 연동
+- 이미지 태그는 `latest` 단독 대신 `git sha`를 병행하세요.

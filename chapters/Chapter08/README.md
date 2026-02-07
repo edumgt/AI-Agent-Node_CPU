@@ -32,3 +32,11 @@ kubectl -n cpu-agent get hpa -w
 
 ## 과제
 - readiness/liveness 초기 지연 시간을 환경에 맞게 조정해보기.
+
+## AI 실무 확장 가이드
+- 배포 후 검증은 기능 테스트 + 운영 테스트를 함께 수행합니다.
+- 필수 확인:
+  - 롤링 업데이트 중 무중단 여부
+  - readiness/liveness 임계값 적정성
+  - HPA scale up/down 안정성(쓰래싱 방지)
+- 장애 시 즉시 롤백 가능한 배포 전략(Helm/Kustomize 버전 관리)을 권장합니다.
