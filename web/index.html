@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>CPU Agent</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>CPU Agent (Express + SSE)</h1>
+    <p class="sub">WSL 로컬 실행 후, EKS 배포까지 이어지는 학습 템플릿</p>
+    <div id="chat" class="chat"></div>
+
+    <form id="form" class="bar">
+      <input id="msg" placeholder="예: 12*(3+4) 계산해줘 / 지금 시간은? / https://example.com" autocomplete="off" />
+      <button>Send</button>
+    </form>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
