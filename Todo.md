@@ -1,3 +1,61 @@
+# AI 관련 IPCC, AICC 정리
+
+AI/컨택센터 문맥에서 **IPCC**, **AICC**는 주로 콜센터(컨택센터) 분야 약어로 쓰입니다. 다만 문맥에 따라 의미가 달라질 수 있어, 현업에서 가장 흔한 의미를 기준으로 정리합니다.
+
+---
+
+## 1) IPCC (대부분: IP Contact Center)
+
+- **IPCC = IP 기반 컨택센터(콜센터)** 를 뜻하는 경우가 많습니다.  
+  전화/상담 시스템이 **IP(VoIP) 네트워크 기반**으로 동작하면서, 콜 라우팅(분배), CTI(컴퓨터-전화 연동), 멀티채널(음성/이메일/채팅 등) 처리를 하는 형태입니다.
+- 예: Cisco 문서에서도 **Cisco IP Contact Center (IPCC)** 라는 이름으로 IP 기반 콜센터/컨택센터 아키텍처를 설명합니다.
+
+**참고**
+- Cisco IP Contact Center (IPCC) 관련 문서: https://www.cisco.com/web/AP/uc/assets/docs/cipcc.pdf
+
+---
+
+## 2) AICC (AI 문맥에서 대부분: AI Contact Center)
+
+- 한국/기업 IT 문서에서 **AICC = AI Contact Center(인공지능 컨택센터)** 로 가장 흔하게 씁니다.  
+  핵심은 **기존 컨택센터에 AI를 적용해 자동화/지능화**하는 것입니다.
+
+대표 기능 예시:
+- 음성인식(STT)으로 상담 내용 실시간 텍스트화
+- 챗봇/보이스봇으로 1차 응대 자동화
+- 상담 요약, 답변 추천, 감정/이슈 분류, 품질 모니터링 등 상담사 Assist
+- 옴니채널(전화/채팅/메신저/이메일) 통합
+
+**참고**
+- Genesys AI Contact Center 소개: https://www.genesys.com/ko-kr/ai-contact-center
+
+---
+
+## 3) 둘의 관계 (현업 감각)
+
+- **IPCC = 컨택센터의 ‘통신/인프라 기반(IP)’ 중심 용어**
+- **AICC = 그 컨택센터 위에 ‘AI 기능’을 본격 적용한 진화형 개념**
+
+즉, **IPCC(기반) → AICC(AI 고도화)** 처럼 함께 엮여 쓰이는 경우가 많습니다.
+
+---
+
+## 4) 헷갈림 주의: AICC는 e‑Learning 표준 의미도 있음
+
+AI/콜센터가 아니라 교육/LMS 문서에서는  
+**AICC = Aviation Industry CBT Committee**(이러닝 콘텐츠 표준) 의미로도 많이 쓰입니다.
+
+- AICC(e-learning) glossary 예시: https://www.iseazy.com/glossary/aicc/
+
+---
+
+## 문맥 판별 팁
+
+- 문서에 **컨택센터/상담/콜/IVR/CTI/보이스봇** 등이 나오면 → 보통 **IPCC / AI Contact Center(AICC)**
+- 문서에 **LMS/SCORM/xAPI/콘텐츠 표준** 등이 나오면 → **Aviation Industry CBT Committee(AICC)**
+
+---
+
 # AI Agent 실무 적용 Todo
 
 이 문서는 본 프로젝트를 학습용에서 **실무 운영 수준**으로 발전시키기 위한 우선순위 작업 목록입니다.
