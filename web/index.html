@@ -8,11 +8,22 @@
 <body>
   <div class="wrap">
     <h1>CPU Agent (Express + SSE)</h1>
-    <p class="sub">WSL 로컬 실행 후, EKS 배포까지 이어지는 학습 템플릿</p>
+    <p class="sub">Provider 선택: Local(룰) / OpenAI / OpenAI+RAG</p>
+
+    <div class="toolbar">
+      <label>Provider</label>
+      <select id="mode">
+        <option value="local">Local (Rule-based)</option>
+        <option value="openai">OpenAI (Text)</option>
+        <option value="openai_rag">OpenAI + RAG</option>
+      </select>
+      <span class="hint">※ OpenAI 모드는 서버에 OPENAI_API_KEY 설정 필요</span>
+    </div>
+
     <div id="chat" class="chat"></div>
 
     <form id="form" class="bar">
-      <input id="msg" placeholder="예: 12*(3+4) 계산해줘 / 지금 시간은? / https://example.com" autocomplete="off" />
+      <input id="msg" placeholder="예: 12*(3+4) 계산해줘 / 지금 시간은? / RAG로 문서 기반 답해줘" autocomplete="off" />
       <button>Send</button>
     </form>
   </div>

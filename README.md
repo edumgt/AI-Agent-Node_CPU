@@ -34,3 +34,20 @@ http://localhost:8080/web/index.html
 
 ## 다음 단계
 `chapters/Chapter01~10`의 MD를 순서대로 따라가면 **기초→배포→운영** 흐름을 완주할 수 있습니다.
+
+## OpenAI + RAG 사용(선택)
+- OpenAI 키는 **서버에서만** 사용해야 합니다(브라우저 노출 금지).
+- RAG는 `rag/docs` 문서를 임베딩해 `rag/rag_store.json`로 저장한 뒤, 질의 시 topK를 검색해 컨텍스트로 주입합니다.
+
+### 로컬에서 실행
+```bash
+cd agent-api
+cp .env.example .env
+# OPENAI_API_KEY 설정 후
+npm i
+npm run rag:ingest
+npm run dev
+```
+
+브라우저:
+- http://127.0.0.1:8080/web/index.html

@@ -28,3 +28,8 @@
 
 ## 과제
 - `tools/`에 `uuid`, `text_summary`(단순 규칙 기반) 같은 도구 2개 추가.
+
+
+## 추가: OpenAI 키 보안 원칙
+- OpenAI API Key는 **브라우저/FE에 절대 노출하면 안 됩니다.**
+- 키는 서버의 환경변수 또는 K8s Secret 등으로만 주입하세요.

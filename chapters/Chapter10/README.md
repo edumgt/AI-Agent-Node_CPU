@@ -38,3 +38,29 @@
 - SQS 비동기 작업 큐(긴 작업 분리)
 - DB/Redis 메모리 저장소
 - 인증(JWT), 레이트리밋, WAF 연동
+
+## 추가 과제: OpenAI 연동 + RAG 활성화
+### 1) 서버에 OpenAI 키 설정(로컬)
+```bash
+cd agent-api
+cp .env.example .env
+# .env에 OPENAI_API_KEY 입력
+node -r dotenv/config src/server.js
+```
+
+### 2) RAG 인덱싱(임베딩 생성)
+```bash
+cd agent-api
+npm run rag:ingest
+```
+- 입력 문서: `rag/docs/*.md`
+- 출력 스토어: `rag/rag_store.json`
+
+### 3) FE에서 Provider 선택
+- Local / OpenAI / OpenAI+RAG 중 선택
+- OpenAI+RAG를 선택하면, 서버가 RAG 컨텍스트를 검색해 시스템 프롬프트에 주입합니다.
+
+### 4) EKS 배포 시 GitHub Secret → K8s Secret 주입
+- GitHub Secrets에 `OPENAI_API_KEY`를 저장
+- Workflow에서 `kubectl create secret generic openai-secret ...`로 주입
+- 서버는 `OPENAI_API_KEY`를 env로 받아 사용합니다.

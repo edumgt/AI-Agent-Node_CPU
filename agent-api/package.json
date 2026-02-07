@@ -4,12 +4,14 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "dev": "node src/server.js",
-    "start": "node src/server.js",
-    "lint": "node -e \"console.log('lint placeholder')\""
+    "dev": "node -r dotenv/config src/server.js",
+    "start": "node -r dotenv/config src/server.js",
+    "lint": "node -e \"console.log('lint placeholder')\"",
+    "rag:ingest": "node -r dotenv/config scripts/ingest_rag.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5"
   }
 }

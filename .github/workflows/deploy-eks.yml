@@ -1,0 +1,61 @@
+name: Deploy CPU Agent to EKS
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPO: cpu-agent
+  K8S_NAMESPACE: cpu-agent
+  DEPLOYMENT_NAME: cpu-agent
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push image
+        run: |
+          IMAGE_URI="${{ secrets.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ github.sha }}"
+          docker build -t "$IMAGE_URI" ./agent-api
+          docker push "$IMAGE_URI"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region "${{ env.AWS_REGION }}" --name "${{ secrets.EKS_CLUSTER_NAME }}"
+
+      - name: Ensure namespace
+        run: |
+          kubectl get ns "${{ env.K8S_NAMESPACE }}" || kubectl create ns "${{ env.K8S_NAMESPACE }}"
+
+      - name: Apply OpenAI secret
+        run: |
+          kubectl -n "${{ env.K8S_NAMESPACE }}" delete secret openai-secret --ignore-not-found=true
+          kubectl -n "${{ env.K8S_NAMESPACE }}" create secret generic openai-secret             --from-literal=OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
+
+      - name: Deploy manifests
+        run: |
+          sed -i "s|YOUR_ECR_IMAGE:TAG|${IMAGE_URI}|g" k8s/deployment.yaml
+          kubectl -n "${{ env.K8S_NAMESPACE }}" apply -k k8s/
+          kubectl -n "${{ env.K8S_NAMESPACE }}" rollout status deploy/${{ env.DEPLOYMENT_NAME }}
