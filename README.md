@@ -1,5 +1,7 @@
 # CPU Agent Service (WSL + Express + Vanilla JS + EKS CPU)
 
+![](image.png)
+
 이 프로젝트는 **GPU 없이 CPU 환경**에서 동작하는 AI Agent 서비스 템플릿입니다.
 핵심은 “작게 시작해서 운영 가능한 형태로 키우는 것”이며, 아래 4축으로 설계되어 있습니다.
 
