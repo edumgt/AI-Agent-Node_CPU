@@ -14,7 +14,8 @@ apt install nodejs
 npm i
 node src/server.js
 ```
----
+
+
 ```
 브라우저에서
 http://localhost:8080/health
@@ -49,5 +50,22 @@ npm run rag:ingest
 npm run dev
 ```
 
+
+---
+```
+cd /home/AI-Agent-Node_CPU/agent-api
+ls -al .env
+cat .env | grep OPENAI_API_KEY
+npm run dev
+```
+```
+node -r dotenv/config src/server.js
+```
+
+---
+
 브라우저:
 - http://127.0.0.1:8080/web/index.html
+
+### 결과화면
+![alt text](image.png)
