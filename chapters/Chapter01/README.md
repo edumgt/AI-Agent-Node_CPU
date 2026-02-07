@@ -14,7 +14,17 @@
 node -v
 npm -v
 ```
-권장: Node 20+
+---
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+nvm use --lts
+nvm install node
+nvm use node
+```
+
+
 
 ## 연습 2) Git 설정
 ```bash
