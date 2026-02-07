@@ -10,8 +10,15 @@
 ## 빠른 시작 (로컬)
 ```bash
 cd agent-api
+apt install nodejs
 npm i
-npm run dev
+node src/server.js
+```
+---
+```
+브라우저에서
+http://localhost:8080/health
+http://localhost:8080/web/index.html
 ```
 
 브라우저에서 `web/index.html` 열고 테스트하세요.
