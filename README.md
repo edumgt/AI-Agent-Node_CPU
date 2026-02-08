@@ -98,11 +98,13 @@ node src/server.js
 ```bash
 cd agent-api
 cp .env.example .env
-# OPENAI_API_KEY 설정 후
+# OPENAI_API_KEY 설정 후 (또는 export OPENAI_API_KEY=...)
 npm i
 npm run rag:ingest
 npm run dev
 ```
+
+> 참고: GitHub Secrets에 저장된 키는 GitHub Actions 실행 시에만 자동 주입됩니다. 로컬 터미널에서 `npm run rag:ingest`를 실행할 때는 `.env` 또는 셸 환경변수로 직접 설정해야 합니다.
 
 브라우저:
 
