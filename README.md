@@ -67,6 +67,14 @@ LLM이 “직접 계산/조회”하는 대신, 도구를 선택해 실행하는
 
 ## 3) 빠른 시작 (로컬)
 
+```
+sudo apt-get update
+sudo apt-get install -y sqlite3
+which sqlite3
+sqlite3 --version
+```
+---
+
 ```bash
 cd agent-api
 npm i
@@ -108,9 +116,11 @@ npm run dev
 
 브라우저:
 
-- http://127.0.0.1:8080/web/index.html
+- http://localhost:8080/web/index.html
 
 ---
+
+![alt text](image-1.png)
 
 ## 6) 운영/실무 체크리스트(요약)
 
