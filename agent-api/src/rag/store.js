@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { spawnSync } = require("child_process");
+const { DatabaseSync } = require("node:sqlite");
 
 const STORE_PATH = process.env.RAG_STORE_PATH || path.join(__dirname, "../../../rag/rag_store.db");
 
@@ -9,21 +9,19 @@ function sqlQuote(value) {
   return `'${String(value).replace(/'/g, "''")}'`;
 }
 
-function runSql(sql, opts = {}) {
+function withDb(handler) {
   fs.mkdirSync(path.dirname(STORE_PATH), { recursive: true });
-  const args = [STORE_PATH];
-  if (opts.json) args.unshift("-json");
+  const db = new DatabaseSync(STORE_PATH);
 
-  const proc = spawnSync("sqlite3", args, {
-    input: sql,
-    encoding: "utf-8",
-  });
-
-  if (proc.status !== 0) {
-    throw new Error(proc.stderr || "sqlite3 command failed");
+  try {
+    return handler(db);
+  } finally {
+    db.close();
   }
+}
 
-  return (proc.stdout || "").trim();
+function runSql(sql) {
+  return withDb((db) => db.exec(sql));
 }
 
 function initStore() {
@@ -76,39 +74,50 @@ function upsertMeta(meta) {
     schemaVersion: meta.schemaVersion || "v1",
   };
 
-  const sql = Object.entries(entries)
-    .map(([k, v]) => `INSERT INTO rag_meta(key, value) VALUES(${sqlQuote(k)}, ${sqlQuote(v)}) ON CONFLICT(key) DO UPDATE SET value=excluded.value;`)
-    .join("\n");
-  runSql(sql);
+  withDb((db) => {
+    const stmt = db.prepare(`
+      INSERT INTO rag_meta(key, value)
+      VALUES(?, ?)
+      ON CONFLICT(key) DO UPDATE SET value=excluded.value;
+    `);
+
+    for (const [key, value] of Object.entries(entries)) {
+      stmt.run(key, value);
+    }
+  });
 }
 
 function insertDocument(doc) {
-  runSql(`
-    INSERT INTO rag_documents(id, title, category, version, source_url, updated_at, file_path, ingested_at)
-    VALUES(
-      ${sqlQuote(doc.id)},
-      ${sqlQuote(doc.title)},
-      ${sqlQuote(doc.category)},
-      ${sqlQuote(doc.version)},
-      ${sqlQuote(doc.sourceUrl)},
-      ${sqlQuote(doc.updatedAt)},
-      ${sqlQuote(doc.filePath)},
-      ${sqlQuote(doc.ingestedAt)}
+  withDb((db) => {
+    db.prepare(`
+      INSERT INTO rag_documents(id, title, category, version, source_url, updated_at, file_path, ingested_at)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+    `).run(
+      doc.id,
+      doc.title ?? null,
+      doc.category ?? null,
+      doc.version ?? null,
+      doc.sourceUrl ?? null,
+      doc.updatedAt ?? null,
+      doc.filePath,
+      doc.ingestedAt
     );
-  `);
+  });
 }
 
 function insertChunk(chunk) {
-  runSql(`
-    INSERT INTO rag_chunks(id, document_id, chunk_index, chunk_text, embedding_json)
-    VALUES(
-      ${sqlQuote(chunk.id)},
-      ${sqlQuote(chunk.documentId)},
-      ${Number(chunk.chunkIndex)},
-      ${sqlQuote(chunk.chunkText)},
-      ${sqlQuote(JSON.stringify(chunk.embedding))}
+  withDb((db) => {
+    db.prepare(`
+      INSERT INTO rag_chunks(id, document_id, chunk_index, chunk_text, embedding_json)
+      VALUES(?, ?, ?, ?, ?);
+    `).run(
+      chunk.id,
+      chunk.documentId,
+      Number(chunk.chunkIndex),
+      chunk.chunkText,
+      JSON.stringify(chunk.embedding)
     );
-  `);
+  });
 }
 
 function loadStore() {
@@ -116,16 +125,15 @@ function loadStore() {
     return { meta: { createdAt: null, embeddingModel: null }, items: [] };
   }
 
-  const metaRowsRaw = runSql("SELECT key, value FROM rag_meta;", { json: true });
-  const chunkRowsRaw = runSql(`
-    SELECT c.id, c.chunk_text, c.embedding_json,
-           d.id AS document_id, d.file_path, d.title, d.category, d.version, d.source_url, d.updated_at
-    FROM rag_chunks c
-    JOIN rag_documents d ON d.id = c.document_id;
-  `, { json: true });
-
-  const metaRows = metaRowsRaw ? JSON.parse(metaRowsRaw) : [];
-  const chunkRows = chunkRowsRaw ? JSON.parse(chunkRowsRaw) : [];
+  const { metaRows, chunkRows } = withDb((db) => ({
+    metaRows: db.prepare("SELECT key, value FROM rag_meta;").all(),
+    chunkRows: db.prepare(`
+      SELECT c.id, c.chunk_text, c.embedding_json,
+             d.id AS document_id, d.file_path, d.title, d.category, d.version, d.source_url, d.updated_at
+      FROM rag_chunks c
+      JOIN rag_documents d ON d.id = c.document_id;
+    `).all(),
+  }));
 
   const meta = metaRows.reduce((acc, row) => {
     acc[row.key] = row.value;
