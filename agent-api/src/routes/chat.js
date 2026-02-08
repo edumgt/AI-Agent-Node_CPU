@@ -34,19 +34,26 @@ router.post("/chat/stream", async (req, res) => {
 
   store.append(sessionId, { role: "user", content: userText });
 
-  await runAgentStream({
-    sessionId,
-    userText,
-    history,
-    mode,
-    onEvent: (evt) => res.write(`data: ${JSON.stringify({ type: "event", evt })}\n\n`),
-    onToken: (t) => res.write(`data: ${JSON.stringify({ type: "token", t })}\n\n`),
-    onDone: (finalText) => {
-      store.append(sessionId, { role: "assistant", content: finalText });
-      res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
-      res.end();
-    },
-  });
+  try {
+    await runAgentStream({
+      sessionId,
+      userText,
+      history,
+      mode,
+      onEvent: (evt) => res.write(`data: ${JSON.stringify({ type: "event", evt })}\n\n`),
+      onToken: (t) => res.write(`data: ${JSON.stringify({ type: "token", t })}\n\n`),
+      onDone: (finalText) => {
+        store.append(sessionId, { role: "assistant", content: finalText });
+        res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+        res.end();
+      },
+    });
+  } catch (err) {
+    const message = err?.message || "알 수 없는 서버 오류";
+    res.write(`data: ${JSON.stringify({ type: "error", message })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+    res.end();
+  }
 });
 
 module.exports = router;
