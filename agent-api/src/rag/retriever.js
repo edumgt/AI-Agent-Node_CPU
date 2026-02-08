@@ -14,7 +14,7 @@ function cosine(a, b) {
   return denom === 0 ? 0 : dot / denom;
 }
 
-async function retrieveTopK({ query, k = 4 }) {
+async function retrieveTopK({ query, k = 4, categories }) {
   const store = loadStore();
   if (!store.items || store.items.length === 0) {
     return { ok: false, contexts: [], reason: "RAG store is empty. 먼저 rag:ingest 실행이 필요합니다." };
@@ -24,13 +24,23 @@ async function retrieveTopK({ query, k = 4 }) {
   const embData = await embedText({ model: embModel, input: query });
   const qVec = embData[0].embedding;
 
-  const scored = store.items.map((it) => ({
+  const filtered = Array.isArray(categories) && categories.length
+    ? store.items.filter((it) => categories.includes(it.document?.category))
+    : store.items;
+
+  const scored = filtered.map((it) => ({
     ...it,
     score: cosine(qVec, it.embedding),
   }));
 
   scored.sort((a, b) => b.score - a.score);
-  const top = scored.slice(0, k).map(({ id, source, chunk, score }) => ({ id, source, chunk, score }));
+  const top = scored.slice(0, k).map(({ id, source, chunk, score, document }) => ({
+    id,
+    source,
+    chunk,
+    score,
+    document,
+  }));
 
   return { ok: true, contexts: top, embeddingModel: embModel };
 }

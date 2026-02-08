@@ -1,3 +1,11 @@
+---
+title: 서비스형 AI Agent 운영 가이드(요약)
+category: operations
+version: 1.1.0
+source_url: internal://ai-platform/ops-guide
+updated_at: 2026-02-08
+---
+
 # 내부 문서 샘플: 서비스형 AI Agent 운영 가이드(요약)
 
 - 이 프로젝트의 에이전트는 **툴 호출 + 메모리 + 스트리밍**을 기반으로 한다.

@@ -13,7 +13,10 @@ async function runAgent({ sessionId, userText, history, mode = "local" }) {
       const ret = await retrieveTopK({ query: userText, k: 4 });
       if (ret.ok && ret.contexts.length) {
         ragContext = ret.contexts
-          .map((c, i) => `[#${i+1} source=${c.source} score=${c.score.toFixed(3)}]\n${c.chunk}`)
+          .map((c, i) => {
+            const meta = c.document || {};
+            return `[#${i+1} source=${c.source} category=${meta.category || "unknown"} version=${meta.version || "n/a"} updatedAt=${meta.updatedAt || "n/a"} score=${c.score.toFixed(3)}]\n${c.chunk}`;
+          })
           .join("\n\n---\n\n");
       } else {
         ragContext = "(RAG 컨텍스트 없음 - store가 비었거나 인덱싱 필요)";
