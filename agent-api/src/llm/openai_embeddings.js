@@ -5,7 +5,11 @@ const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v
 
 function requireKey() {
   const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error("OPENAI_API_KEY가 설정되어 있지 않습니다.");
+  if (!key) {
+    throw new Error(
+      "OPENAI_API_KEY가 설정되어 있지 않습니다. 로컬 실행 시에는 agent-api/.env 또는 셸 환경변수(export OPENAI_API_KEY=...)에 키를 설정해야 합니다. (GitHub Secrets는 Actions 실행 환경에서만 자동 주입됩니다.)"
+    );
+  }
   return key;
 }
 
