@@ -7,6 +7,9 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const SESSION_DB_PATH = process.env.SESSION_DB_PATH || path.join(__dirname, "../../../rag/session_store.db");
+const SQLITE_BIN_CANDIDATES = [process.env.SQLITE3_BIN, "sqlite3", "/usr/bin/sqlite3"].filter(Boolean);
+
+let sqliteCommand = null;
 
 function sqlQuote(value) {
   if (value === null || value === undefined) return "NULL";
@@ -18,13 +21,33 @@ function runSql(sql, json = false) {
   const args = [SESSION_DB_PATH];
   if (json) args.unshift("-json");
 
-  const proc = spawnSync("sqlite3", args, {
-    input: sql,
-    encoding: "utf-8",
-  });
+  let proc;
+  const attempted = [];
+
+  const commands = sqliteCommand ? [sqliteCommand] : SQLITE_BIN_CANDIDATES;
+  for (const cmd of commands) {
+    attempted.push(cmd);
+    proc = spawnSync(cmd, args, {
+      input: sql,
+      encoding: "utf-8",
+    });
+
+    if (proc.error) {
+      if (proc.error.code === "ENOENT") continue;
+      throw proc.error;
+    }
+
+    sqliteCommand = cmd;
+    break;
+  }
+
+  if (!proc || proc.error) {
+    throw new Error(`sqlite3 executable not found. Tried: ${attempted.join(", ")}`);
+  }
 
   if (proc.status !== 0) {
-    throw new Error(proc.stderr || "sqlite3 failed");
+    const detail = (proc.stderr || "").trim() || (proc.stdout || "").trim() || "unknown error";
+    throw new Error(`sqlite3 failed (${sqliteCommand}): ${detail}`);
   }
   return (proc.stdout || "").trim();
 }
