@@ -4,6 +4,8 @@ const { DatabaseSync } = require("node:sqlite");
 
 const STORE_PATH = process.env.RAG_STORE_PATH || path.join(__dirname, "../../../rag/rag_store.db");
 
+const SQLITE_HEADER = Buffer.from("SQLite format 3\u0000", "utf8");
+
 function sqlQuote(value) {
   if (value === null || value === undefined) return "NULL";
   return `'${String(value).replace(/'/g, "''")}'`;
@@ -11,6 +13,7 @@ function sqlQuote(value) {
 
 function withDb(handler) {
   fs.mkdirSync(path.dirname(STORE_PATH), { recursive: true });
+  recoverNonSqliteFile(STORE_PATH);
   const db = new DatabaseSync(STORE_PATH);
 
   try {
@@ -18,6 +21,26 @@ function withDb(handler) {
   } finally {
     db.close();
   }
+}
+
+function recoverNonSqliteFile(storePath) {
+  if (!fs.existsSync(storePath)) return;
+
+  const stat = fs.statSync(storePath);
+  if (!stat.isFile() || stat.size === 0) return;
+
+  const fd = fs.openSync(storePath, "r");
+  const header = Buffer.alloc(SQLITE_HEADER.length);
+  fs.readSync(fd, header, 0, SQLITE_HEADER.length, 0);
+  fs.closeSync(fd);
+
+  if (header.compare(SQLITE_HEADER) === 0) return;
+
+  const backupPath = `${storePath}.invalid-${Date.now()}`;
+  fs.renameSync(storePath, backupPath);
+  process.stderr.write(
+    `[rag/store] Existing store was not a SQLite database. Moved to: ${backupPath}\n`
+  );
 }
 
 function runSql(sql) {
