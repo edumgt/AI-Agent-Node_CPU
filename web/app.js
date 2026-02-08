@@ -33,36 +33,46 @@ form.addEventListener("submit", async (e) => {
   add("user", `[${mode}] ${text}`);
   const botEl = add("assistant", "");
 
-  const r = await fetch(`${API_BASE}/api/chat/stream`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ sessionId, mode, message: text }),
-  });
+  try {
+    const r = await fetch(`${API_BASE}/api/chat/stream`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ sessionId, mode, message: text }),
+    });
 
-  const reader = r.body.getReader();
-  const decoder = new TextDecoder("utf-8");
-  let buf = "";
+    if (!r.ok || !r.body) {
+      throw new Error(`요청 실패(${r.status})`);
+    }
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buf = "";
 
-    const parts = buf.split("\n\n");
-    buf = parts.pop();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
 
-    for (const p of parts) {
-      const line = p.split("\n").find(x => x.startsWith("data: "));
-      if (!line) continue;
-      const payload = JSON.parse(line.slice(6));
+      const parts = buf.split("\n\n");
+      buf = parts.pop();
 
-      if (payload.type === "token" && payload.t) {
-        botEl.textContent += payload.t;
-      } else if (payload.type === "event") {
-        const evt = payload.evt;
-        if (evt?.type === "llm_used") addMeta(`LLM 사용: ${evt.provider} / ${evt.model}`);
-        if (evt?.type === "tool_used") addMeta(`Tool 사용: ${evt.name}`);
+      for (const p of parts) {
+        const line = p.split("\n").find((x) => x.startsWith("data: "));
+        if (!line) continue;
+        const payload = JSON.parse(line.slice(6));
+
+        if (payload.type === "token" && payload.t) {
+          botEl.textContent += payload.t;
+        } else if (payload.type === "event") {
+          const evt = payload.evt;
+          if (evt?.type === "llm_used") addMeta(`LLM 사용: ${evt.provider} / ${evt.model}`);
+          if (evt?.type === "tool_used") addMeta(`Tool 사용: ${evt.name}`);
+        } else if (payload.type === "error") {
+          botEl.textContent += `\n[오류] ${payload.message || "알 수 없는 오류"}`;
+        }
       }
     }
+  } catch (err) {
+    botEl.textContent = `요청 중 오류가 발생했습니다: ${err?.message || "unknown error"}`;
   }
 });
