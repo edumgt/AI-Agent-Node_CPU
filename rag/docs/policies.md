@@ -1,3 +1,11 @@
+---
+title: 보안/비용 가드레일
+category: governance
+version: 1.2.0
+source_url: internal://ai-platform/security-cost-policy
+updated_at: 2026-02-08
+---
+
 # 내부 문서 샘플: 보안/비용 가드레일
 
 ## 보안
